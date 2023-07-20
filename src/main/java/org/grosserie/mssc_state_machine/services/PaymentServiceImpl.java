@@ -10,6 +10,7 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.support.DefaultStateMachineContext;
+import org.springframework.statemachine.support.StateMachineInterceptor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,7 +21,9 @@ import java.util.Optional;
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
-    private StateMachineFactory<PaymentState, PaymentEvent> stateMachineFactory;
+    private final StateMachineFactory<PaymentState, PaymentEvent> stateMachineFactory;
+    private final StateMachineInterceptor stateMachineInterceptor;
+
     public static final String PAYMENT_ID_HEADER = "payment_id";
 
     @Override
@@ -66,6 +69,7 @@ public class PaymentServiceImpl implements PaymentService {
         sm.stop();
         sm.getStateMachineAccessor()
                 .doWithAllRegions(sma -> {
+                    sma.addStateMachineInterceptor(stateMachineInterceptor);
                     sma.resetStateMachine(new DefaultStateMachineContext<>(payment.getState(),null,null,null));
                 });
         sm.start();
