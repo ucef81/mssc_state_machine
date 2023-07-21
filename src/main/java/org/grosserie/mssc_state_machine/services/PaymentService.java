@@ -6,7 +6,7 @@ import org.grosserie.mssc_state_machine.domain.PaymentState;
 import org.springframework.statemachine.StateMachine;
 
 public interface PaymentService {
-    Payment NewPayment(Payment p);
+    Payment newPayment(Payment p);
 
     StateMachine<PaymentState, PaymentEvent> preAuth(Long paymentId);
 
